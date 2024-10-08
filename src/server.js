@@ -1,40 +1,26 @@
-//const express = require('express')
-//import e from 'express'
 import express from 'express'
+import cors from 'cors'
+import authRouter from './routers/authRouter.js'
+import accountRouter from './routers/accountRouter.js'
+import errorHandler from './middlewares/errorHandler.js'
+import welcome from './controllers/welcome.js'
+import { ENVIRONMENT, PORT, HOST } from './config.js'
+import logger from './middlewares/logger.js'
 
 const app = express()
 
-app.post('/auth/singup',(req, res) => {
-    res.json({ message: "rota de POST auth/singup!",})
-})
-app.post('/auth/login',(req, res) => {
-    res.json({ message: "rota de POST auth/login!",})
-})
-app.post('/auth/logout',(req, res) => {
-    res.json({ message: "rota de POST auth/logout!",})
-})
+app.use(logger)
+app.use(cors())
+app.use(express.json())
 
-app.post('/account',(req, res) => {
-    res.json({ message: "teste metodo POST account!",})
-})
+app.get('/', welcome)
 
-app.get('/account/list',(req, res) => {
-    res.json({ message: "teste metodo GET account/list!",})
-})
+app.use('/auth', authRouter)
 
-app.get('/account/id',(req, res) => {
-    res.json({ message: "teste metodo GET account ID!",})
-})
-app.put('/account/id',(req, res) => {
-    res.json({ message: "teste metodo PUT account!",})
-})
+app.use('/account', accountRouter)
 
-app.delete('/account/id',(req, res) => {
-    res.json({ message: "teste metodo DELETE account!",})
-})
+app.use(errorHandler)
 
-
-
-app.listen(3000,() => {
-    console.log('servidor rodando em http://localhost:3000')
+app.listen(PORT, () => {
+    console.log(`Servidor Rodando no ambiente ${ENVIRONMENT} em ${ ENVIRONMENT == 'production' ? HOST : HOST+':'+PORT }`)
 })
